@@ -1,0 +1,19 @@
+# Node dependencies
+node_modules/
+
+# Environment config
+.env
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Package managers' lock files (optional, if you don't want to track them)
+# package-lock.json
+# yarn.lock
+
+# Coverage/output folders (if you use testing frameworks)
+coverage/
