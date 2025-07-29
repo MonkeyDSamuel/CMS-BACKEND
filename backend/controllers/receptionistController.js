@@ -1,5 +1,6 @@
 const Patient = require('../models/receptionist');
 const Appointment = require('../models/receptionist');
+const Billing = require('../models/receptionist');
 
 
 // Register Patient: POST /api/patients
@@ -159,10 +160,6 @@ module.exports = {
     deactivatePatient
 }; 
 
-
-const Appointment = require('../models/Appointment');
-const Patient = require('../models/Patient');
-const Doctor = require('../models/Doctor');
 
 // Schedule Appointment: POST /api/appointments
 const scheduleAppointment = async (req, res) => {
@@ -642,6 +639,8 @@ const getAppointmentsByStatus = async (req, res) => {
 };
 
 module.exports = {
+    registerPatient,
+    updatePatient,
     scheduleAppointment,
     updateAppointment,
     getAppointmentById,
