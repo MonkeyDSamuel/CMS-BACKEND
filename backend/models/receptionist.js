@@ -4,6 +4,7 @@ const PatientSchema = new Schema({
     name: { type: String, required: true },
     dob: Date,
     gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    Blood_group : {type:String,required:true},
     email: { type: String, unique: true },
     phone: String,
     address: String,
