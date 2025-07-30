@@ -1,5 +1,4 @@
-const { Staff, Role, Specialization } = require('../models/admin');
-const Doctor = require('../models/doctor');
+const { Staff, Specialization, Doctor } = require('../models/admin');
 
 // Staff Management
 exports.createStaff = async (req, res) => {
@@ -14,7 +13,7 @@ exports.createStaff = async (req, res) => {
 
 exports.updateStaff = async (req, res) => {
     try {
-        const staff = await Staff.findByIdAndUpdate(req.params.staffId, req.body, { new: true });
+        const staff = await Staff.findOneAndUpdate({ Staff_Id: req.params.staffId }, req.body, { new: true });
         if (!staff) return res.status(404).json({ error: 'Staff not found' });
         res.json(staff);
     } catch (err) {
@@ -24,7 +23,7 @@ exports.updateStaff = async (req, res) => {
 
 exports.getStaffById = async (req, res) => {
     try {
-        const staff = await Staff.findById(req.params.staffId).populate('role');
+        const staff = await Staff.findOne({ Staff_Id: req.params.staffId });
         if (!staff) return res.status(404).json({ error: 'Staff not found' });
         res.json(staff);
     } catch (err) {
@@ -34,7 +33,7 @@ exports.getStaffById = async (req, res) => {
 
 exports.listAllStaff = async (req, res) => {
     try {
-        const staff = await Staff.find().populate('role');
+        const staff = await Staff.find();
         res.json(staff);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -43,59 +42,9 @@ exports.listAllStaff = async (req, res) => {
 
 exports.deactivateStaff = async (req, res) => {
     try {
-        const staff = await Staff.findByIdAndUpdate(req.params.staffId, { isActive: false }, { new: true });
+        const staff = await Staff.findOneAndUpdate({ Staff_Id: req.params.staffId }, { isActive: false }, { new: true });
         if (!staff) return res.status(404).json({ error: 'Staff not found' });
         res.json(staff);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-// Role Management
-exports.createRole = async (req, res) => {
-    try {
-        const role = new Role(req.body);
-        await role.save();
-        res.status(201).json(role);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-exports.updateRole = async (req, res) => {
-    try {
-        const role = await Role.findByIdAndUpdate(req.params.roleId, req.body, { new: true });
-        if (!role) return res.status(404).json({ error: 'Role not found' });
-        res.json(role);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-exports.getRoleById = async (req, res) => {
-    try {
-        const role = await Role.findById(req.params.roleId);
-        if (!role) return res.status(404).json({ error: 'Role not found' });
-        res.json(role);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-exports.listAllRoles = async (req, res) => {
-    try {
-        const roles = await Role.find();
-        res.json(roles);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-exports.deactivateRole = async (req, res) => {
-    try {
-        const role = await Role.findByIdAndUpdate(req.params.roleId, { isActive: false }, { new: true });
-        if (!role) return res.status(404).json({ error: 'Role not found' });
-        res.json(role);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -104,6 +53,9 @@ exports.deactivateRole = async (req, res) => {
 // Doctor Management
 exports.createDoctor = async (req, res) => {
     try {
+        // Ensure specialization is a valid Specialization_Id
+        const specialization = await Specialization.findOne({ Specialization_Id: req.body.specialization });
+        if (!specialization) return res.status(400).json({ error: 'Invalid Specialization_Id' });
         const doctor = new Doctor(req.body);
         await doctor.save();
         res.status(201).json(doctor);
@@ -114,7 +66,7 @@ exports.createDoctor = async (req, res) => {
 
 exports.updateDoctor = async (req, res) => {
     try {
-        const doctor = await Doctor.findByIdAndUpdate(req.params.doctorId, req.body, { new: true });
+        const doctor = await Doctor.findOneAndUpdate({ Doctor_Id: req.params.doctorId }, req.body, { new: true });
         if (!doctor) return res.status(404).json({ error: 'Doctor not found' });
         res.json(doctor);
     } catch (err) {
@@ -124,7 +76,7 @@ exports.updateDoctor = async (req, res) => {
 
 exports.getDoctorById = async (req, res) => {
     try {
-        const doctor = await Doctor.findById(req.params.doctorId);
+        const doctor = await Doctor.findOne({ Doctor_Id: req.params.doctorId });
         if (!doctor) return res.status(404).json({ error: 'Doctor not found' });
         res.json(doctor);
     } catch (err) {
@@ -143,7 +95,7 @@ exports.listAllDoctors = async (req, res) => {
 
 exports.deactivateDoctor = async (req, res) => {
     try {
-        const doctor = await Doctor.findByIdAndUpdate(req.params.doctorId, { isActive: false }, { new: true });
+        const doctor = await Doctor.findOneAndUpdate({ Doctor_Id: req.params.doctorId }, { isActive: false }, { new: true });
         if (!doctor) return res.status(404).json({ error: 'Doctor not found' });
         res.json(doctor);
     } catch (err) {
@@ -164,7 +116,7 @@ exports.addSpecialization = async (req, res) => {
 
 exports.updateSpecialization = async (req, res) => {
     try {
-        const specialization = await Specialization.findByIdAndUpdate(req.params.specializationId, req.body, { new: true });
+        const specialization = await Specialization.findOneAndUpdate({ Specialization_Id: req.params.specializationId }, req.body, { new: true });
         if (!specialization) return res.status(404).json({ error: 'Specialization not found' });
         res.json(specialization);
     } catch (err) {
@@ -174,7 +126,7 @@ exports.updateSpecialization = async (req, res) => {
 
 exports.getSpecializationById = async (req, res) => {
     try {
-        const specialization = await Specialization.findById(req.params.specializationId);
+        const specialization = await Specialization.findOne({ Specialization_Id: req.params.specializationId });
         if (!specialization) return res.status(404).json({ error: 'Specialization not found' });
         res.json(specialization);
     } catch (err) {

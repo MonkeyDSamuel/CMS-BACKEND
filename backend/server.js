@@ -10,6 +10,10 @@ const PORT = process.env.PORT || 8002;
 app.use(cors());
 app.use(express.json());
 
+// Register admin routes
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
+
 //connect to db and start the server
 connectDB().then(() => {
     app.listen(PORT,() => {

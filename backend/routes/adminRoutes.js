@@ -9,13 +9,6 @@ router.get('/staff/:staffId', adminController.getStaffById);
 router.get('/staff', adminController.listAllStaff);
 router.patch('/staff/:staffId/deactivate', adminController.deactivateStaff);
 
-// Role Management
-router.post('/roles', adminController.createRole);
-router.put('/roles/:roleId', adminController.updateRole);
-router.get('/roles/:roleId', adminController.getRoleById);
-router.get('/roles', adminController.listAllRoles);
-router.patch('/roles/:roleId/deactivate', adminController.deactivateRole);
-
 // Doctor Management
 router.post('/doctors', adminController.createDoctor);
 router.put('/doctors/:doctorId', adminController.updateDoctor);
