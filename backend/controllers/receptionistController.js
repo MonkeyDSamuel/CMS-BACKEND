@@ -1,7 +1,4 @@
-const Patient = require('../models/receptionist');
-const Appointment = require('../models/receptionist');
-const Billing = require('../models/receptionist');
-
+const { Patient, Appointment, Billing } = require('../models/receptionist');
 
 // Register Patient: POST /api/patients
 const registerPatient = async (req, res) => {
@@ -22,12 +19,12 @@ const registerPatient = async (req, res) => {
     }
 };
 
-// Update Patient Information: PUT /api/patients/{patientId}
+// Update Patient Information: PUT /api/patients/{id}
 const updatePatient = async (req, res) => {
     try {
-        const { patientId } = req.params;
+        const { id } = req.params;
         const patient = await Patient.findByIdAndUpdate(
-            patientId,
+            id,
             req.body,
             { new: true, runValidators: true }
         );
@@ -53,11 +50,11 @@ const updatePatient = async (req, res) => {
     }
 };
 
-// Get Patient by ID: GET /api/patients/{patientId}
+// Get Patient by ID: GET /api/patients/{id}
 const getPatientById = async (req, res) => {
     try {
-        const { patientId } = req.params;
-        const patient = await Patient.findById(patientId);
+        const { id } = req.params;
+        const patient = await Patient.findById(id);
         
         if (!patient) {
             return res.status(404).json({
@@ -84,12 +81,11 @@ const getAllPatients = async (req, res) => {
     try {
         const { page = 1, limit = 10, search } = req.query;
         
-        let query = { is_active: true };
+        let query = { status: 'active' };
         
         if (search) {
             query.$or = [
-                { first_name: { $regex: search, $options: 'i' } },
-                { last_name: { $regex: search, $options: 'i' } },
+                { name: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } },
                 { phone: { $regex: search, $options: 'i' } }
             ];
@@ -98,7 +94,7 @@ const getAllPatients = async (req, res) => {
         const patients = await Patient.find(query)
             .limit(limit * 1)
             .skip((page - 1) * limit)
-            .sort({ created_at: -1 });
+            .sort({ createdAt: -1 });
             
         const total = await Patient.countDocuments(query);
         
@@ -121,13 +117,13 @@ const getAllPatients = async (req, res) => {
     }
 };
 
-// Deactivate Patient: PATCH /api/patients/{patientId}/deactivate
+// Deactivate Patient: PATCH /api/patients/{id}
 const deactivatePatient = async (req, res) => {
     try {
-        const { patientId } = req.params;
+        const { id } = req.params;
         const patient = await Patient.findByIdAndUpdate(
-            patientId,
-            { is_active: false },
+            id,
+            { status: 'inactive' },
             { new: true }
         );
         
@@ -152,21 +148,12 @@ const deactivatePatient = async (req, res) => {
     }
 };
 
-module.exports = {
-    registerPatient,
-    updatePatient,
-    getPatientById,
-    getAllPatients,
-    deactivatePatient
-}; 
-
-
-// Schedule Appointment: POST /api/appointments
+// Schedule Appointment: POST /api/Appointment
 const scheduleAppointment = async (req, res) => {
     try {
         const appointment = new Appointment({
             ...req.body,
-            created_by_staff: req.user.id // Assuming user is authenticated
+            created_by_staff: req.user?.id || 'staff_id' // Assuming user is authenticated
         });
         await appointment.save();
         
@@ -187,12 +174,12 @@ const scheduleAppointment = async (req, res) => {
     }
 };
 
-// Update Appointment: PUT /api/appointments/{appointmentId}
+// Update Appointment: PUT /api/Appointment/{id}
 const updateAppointment = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
+        const { id } = req.params;
         const appointment = await Appointment.findByIdAndUpdate(
-            appointmentId,
+            id,
             req.body,
             { new: true, runValidators: true }
         ).populate(['patient_id', 'doctor_id']);
@@ -218,11 +205,11 @@ const updateAppointment = async (req, res) => {
     }
 };
 
-// Get Appointment by ID: GET /api/appointments/{appointmentId}
+// Get Appointment by ID: GET /api/Appointment/{id}
 const getAppointmentById = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
-        const appointment = await Appointment.findById(appointmentId)
+        const { id } = req.params;
+        const appointment = await Appointment.findById(id)
             .populate(['patient_id', 'doctor_id', 'created_by_staff']);
         
         if (!appointment) {
@@ -245,7 +232,7 @@ const getAppointmentById = async (req, res) => {
     }
 };
 
-// List Appointments by Date: GET /api/appointments?date={appointmentDate}
+// List Appointments by Date: GET /api/Appointment?date={appointmentDate}
 const getAppointmentsByDate = async (req, res) => {
     try {
         const { date, page = 1, limit = 10 } = req.query;
@@ -290,12 +277,12 @@ const getAppointmentsByDate = async (req, res) => {
     }
 };
 
-// Cancel Appointment: PATCH /api/appointments/{appointmentId}/cancel
+// Cancel Appointment: PATCH /api/Appointment/{id}
 const cancelAppointment = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
+        const { id } = req.params;
         const appointment = await Appointment.findByIdAndUpdate(
-            appointmentId,
+            id,
             { status: 'cancelled' },
             { new: true }
         ).populate(['patient_id', 'doctor_id']);
@@ -321,10 +308,7 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
-const Billing = require('../models/receptionist');
-const Appointment = require('../models/receptionist');
-
-// Generate Appointment Bill: POST /api/billing
+// Generate Appointment Bill: POST /api/bill
 const generateBill = async (req, res) => {
     try {
         const { appointment_id, amount } = req.body;
@@ -380,12 +364,12 @@ const generateBill = async (req, res) => {
     }
 };
 
-// Update Appointment Bill: PUT /api/billing/{appointmentId}
+// Update Appointment Bill: PUT /api/bill/{id}
 const updateBill = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
-        const bill = await Billing.findOneAndUpdate(
-            { appointment_id: appointmentId },
+        const { id } = req.params;
+        const bill = await Billing.findByIdAndUpdate(
+            id,
             req.body,
             { new: true, runValidators: true }
         ).populate({
@@ -414,11 +398,11 @@ const updateBill = async (req, res) => {
     }
 };
 
-// Get Bill by Appointment ID: GET /api/billing/{appointmentId}
+// Get Bill by Appointment ID: GET /api/bill/{id}
 const getBillByAppointmentId = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
-        const bill = await Billing.findOne({ appointment_id: appointmentId })
+        const { id } = req.params;
+        const bill = await Billing.findOne({ appointment_id: id })
             .populate({
                 path: 'appointment_id',
                 populate: ['patient_id', 'doctor_id']
@@ -444,164 +428,7 @@ const getBillByAppointmentId = async (req, res) => {
     }
 };
 
-// List Bills by Date Range: GET /api/billing?startDate={startDate}&endDate={endDate}
-const getBillsByDateRange = async (req, res) => {
-    try {
-        const { startDate, endDate, page = 1, limit = 10, status } = req.query;
-        
-        let query = {};
-        
-        if (startDate && endDate) {
-            query.created_at = {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate)
-            };
-        }
-        
-        if (status) {
-            query.status = status;
-        }
-        
-        const bills = await Billing.find(query)
-            .populate({
-                path: 'appointment_id',
-                populate: ['patient_id', 'doctor_id']
-            })
-            .limit(limit * 1)
-            .skip((page - 1) * limit)
-            .sort({ created_at: -1 });
-            
-        const total = await Billing.countDocuments(query);
-        
-        res.json({
-            success: true,
-            data: bills,
-            pagination: {
-                current_page: parseInt(page),
-                total_pages: Math.ceil(total / limit),
-                total_records: total,
-                records_per_page: parseInt(limit)
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get bills',
-            error: error.message
-        });
-    }
-};
-
-// Mark bill as paid
-const markBillAsPaid = async (req, res) => {
-    try {
-        const { appointmentId } = req.params;
-        const bill = await Billing.findOneAndUpdate(
-            { appointment_id: appointmentId },
-            { status: 'paid' },
-            { new: true }
-        ).populate({
-            path: 'appointment_id',
-            populate: ['patient_id', 'doctor_id']
-        });
-        
-        if (!bill) {
-            return res.status(404).json({
-                success: false,
-                message: 'Bill not found'
-            });
-        }
-        
-        res.json({
-            success: true,
-            message: 'Bill marked as paid successfully',
-            data: bill
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to mark bill as paid',
-            error: error.message
-        });
-    }
-};
-
-module.exports = {
-    generateBill,
-    updateBill,
-    getBillByAppointmentId,
-    getBillsByDateRange,
-    markBillAsPaid
-}; 
-
-
-// List Appointments by Patient: GET /api/appointments/patient/{patientId}
-const getAppointmentsByPatient = async (req, res) => {
-    try {
-        const { patientId } = req.params;
-        const { page = 1, limit = 10 } = req.query;
-        
-        const appointments = await Appointment.find({ patient_id: patientId })
-            .populate(['patient_id', 'doctor_id'])
-            .limit(limit * 1)
-            .skip((page - 1) * limit)
-            .sort({ scheduled_date: -1 });
-            
-        const total = await Appointment.countDocuments({ patient_id: patientId });
-        
-        res.json({
-            success: true,
-            data: appointments,
-            pagination: {
-                current_page: parseInt(page),
-                total_pages: Math.ceil(total / limit),
-                total_records: total,
-                records_per_page: parseInt(limit)
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get patient appointments',
-            error: error.message
-        });
-    }
-};
-
-// List Appointments by Doctor: GET /api/appointments/doctor/{doctorId}
-const getAppointmentsByDoctor = async (req, res) => {
-    try {
-        const { doctorId } = req.params;
-        const { page = 1, limit = 10 } = req.query;
-        
-        const appointments = await Appointment.find({ doctor_id: doctorId })
-            .populate(['patient_id', 'doctor_id'])
-            .limit(limit * 1)
-            .skip((page - 1) * limit)
-            .sort({ scheduled_date: 1 });
-            
-        const total = await Appointment.countDocuments({ doctor_id: doctorId });
-        
-        res.json({
-            success: true,
-            data: appointments,
-            pagination: {
-                current_page: parseInt(page),
-                total_pages: Math.ceil(total / limit),
-                total_records: total,
-                records_per_page: parseInt(limit)
-            }
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get doctor appointments',
-            error: error.message
-        });
-    }
-};
-
-// Get Appointments with Status: GET /api/appointments?status={status}
+// Get Appointments with Status: GET /api/bill
 const getAppointmentsByStatus = async (req, res) => {
     try {
         const { status, page = 1, limit = 10 } = req.query;
@@ -641,13 +468,17 @@ const getAppointmentsByStatus = async (req, res) => {
 module.exports = {
     registerPatient,
     updatePatient,
+    getPatientById,
+    getAllPatients,
+    deactivatePatient,
     scheduleAppointment,
     updateAppointment,
     getAppointmentById,
     getAppointmentsByDate,
     cancelAppointment,
-    getAppointmentsByPatient,
-    getAppointmentsByDoctor,
+    generateBill,
+    updateBill,
+    getBillByAppointmentId,
     getAppointmentsByStatus
 }; 
 

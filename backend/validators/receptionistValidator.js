@@ -18,13 +18,17 @@ const validatePatientRegistration = [
     body('name')
         .trim()
         .isLength({ min: 2, max: 50 })
-        .withMessage('First name must be between 2 and 50 characters'),
-    body('date_of_birth')
+        .withMessage('Name must be between 2 and 50 characters'),
+    body('dob')
         .isISO8601()
         .withMessage('Date of birth must be a valid date'),
     body('gender')
         .isIn(['Male', 'Female', 'Other'])
         .withMessage('Gender must be Male, Female, or Other'),
+    body('Blood_group')
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Blood group is required'),
     body('email')
         .optional()
         .isEmail()
@@ -33,34 +37,24 @@ const validatePatientRegistration = [
         .trim()
         .isLength({ min: 10, max: 15 })
         .withMessage('Phone number must be between 10 and 15 characters'),
-    body('address.street').optional().trim(),
-    body('address.city').optional().trim(),
-    body('address.state').optional().trim(),
-    body('address.zip_code').optional().trim(),
-    body('address.country').optional().trim(),
-    body('emergency_contact.name').optional().trim(),
-    body('emergency_contact.relationship').optional().trim(),
-    body('emergency_contact.phone').optional().trim(),
-    body('medical_history').optional().isArray(),
-    body('allergies').optional().isArray(),
+    body('address')
+        .optional()
+        .trim()
+        .isLength({ max: 500 })
+        .withMessage('Address must not exceed 500 characters'),
     handleValidationErrors
 ];
 
 const validatePatientUpdate = [
-    param('patientId')
+    param('id')
         .isMongoId()
         .withMessage('Invalid patient ID'),
-    body('first_name')
+    body('name')
         .optional()
         .trim()
         .isLength({ min: 2, max: 50 })
-        .withMessage('First name must be between 2 and 50 characters'),
-    body('last_name')
-        .optional()
-        .trim()
-        .isLength({ min: 2, max: 50 })
-        .withMessage('Last name must be between 2 and 50 characters'),
-    body('date_of_birth')
+        .withMessage('Name must be between 2 and 50 characters'),
+    body('dob')
         .optional()
         .isISO8601()
         .withMessage('Date of birth must be a valid date'),
@@ -68,6 +62,11 @@ const validatePatientUpdate = [
         .optional()
         .isIn(['Male', 'Female', 'Other'])
         .withMessage('Gender must be Male, Female, or Other'),
+    body('Blood_group')
+        .optional()
+        .trim()
+        .isLength({ min: 1 })
+        .withMessage('Blood group is required'),
     body('email')
         .optional()
         .isEmail()
@@ -77,11 +76,16 @@ const validatePatientUpdate = [
         .trim()
         .isLength({ min: 10, max: 15 })
         .withMessage('Phone number must be between 10 and 15 characters'),
+    body('address')
+        .optional()
+        .trim()
+        .isLength({ max: 500 })
+        .withMessage('Address must not exceed 500 characters'),
     handleValidationErrors
 ];
 
 const validatePatientId = [
-    param('patientId')
+    param('id')
         .isMongoId()
         .withMessage('Invalid patient ID'),
     handleValidationErrors
@@ -128,7 +132,7 @@ const validateAppointmentSchedule = [
 ];
 
 const validateAppointmentUpdate = [
-    param('appointmentId')
+    param('id')
         .isMongoId()
         .withMessage('Invalid appointment ID'),
     body('patient_id')
@@ -156,7 +160,7 @@ const validateAppointmentUpdate = [
 ];
 
 const validateAppointmentId = [
-    param('appointmentId')
+    param('id')
         .isMongoId()
         .withMessage('Invalid appointment ID'),
     handleValidationErrors
@@ -194,9 +198,9 @@ const validateBillGeneration = [
 ];
 
 const validateBillUpdate = [
-    param('appointmentId')
+    param('id')
         .isMongoId()
-        .withMessage('Invalid appointment ID'),
+        .withMessage('Invalid bill ID'),
     body('amount')
         .optional()
         .isFloat({ min: 0 })

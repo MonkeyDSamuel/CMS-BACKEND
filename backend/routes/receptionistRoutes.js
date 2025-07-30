@@ -3,32 +3,35 @@ const router = express.Router();
 
 const patCtrl = require('../controllers/receptionistController');
 
+const {validatePatientRegistration} = require('../validators/receptionistValidator');
+const {validatePatientUpdate} = require('../validators/receptionistValidator');
+const {validatePatientId} = require('../validators/receptionistValidator');
+const {validatePatientList} = require('../validators/receptionistValidator');
 
+router.post('/patients', validatePatientRegistration, patCtrl.registerPatient);
+router.put('/patients/:id', validatePatientUpdate, patCtrl.updatePatient);
+router.get('/patients', validatePatientList, patCtrl.getAllPatients);
+router.get('/patients/:id', validatePatientId, patCtrl.getPatientById);
+router.patch('/patients/:id', patCtrl.deactivatePatient);
 
-router.post('/',patCtrl.registerPatient);
-router.put('/', patCtrl.updatePatient);
-router.get('/', patCtrl.getAllPatients);
-router.get('/id', patCtrl.getPatientById);
-router.patch('/id', patCtrl.deactivatePatient);
+const {validateAppointmentSchedule} = require('../validators/receptionistValidator');
+const {validateAppointmentUpdate} = require('../validators/receptionistValidator');
+const {validateAppointmentId} = require('../validators/receptionistValidator');
+const {validateAppointmentList} = require('../validators/receptionistValidator');
 
+router.post('/Appointment', validateAppointmentSchedule, patCtrl.scheduleAppointment);
+router.put('/Appointment/:id', validateAppointmentUpdate, patCtrl.updateAppointment);
+router.get('/Appointment/:id', validateAppointmentId, patCtrl.getAppointmentById);
+router.get('/Appointment', validateAppointmentList, patCtrl.getAppointmentsByDate);
+router.patch('/Appointment/:id', patCtrl.cancelAppointment);
 
+const {validateBillGeneration} = require('../validators/receptionistValidator');
+const {validateBillUpdate} = require('../validators/receptionistValidator');
+const {validateBillList} = require('../validators/receptionistValidator');
 
-const appCtrl = require('../controllers/receptionistController');
-
-router.post('/', appCtrl.scheduleAppointment);
-router.put('/', appCtrl.updateAppointment);
-router.get('/id', appCtrl.getAppointmentById);
-router.get('/', appCtrl.getAppointmentsByDate);
-router.patch('/id', appCtrl.cancelAppointment);
-
-
-
-const BillCtrl = require('../controllers/receptionistController');
-
-router.post('/', BillCtrl.generateBill);
-router.put('/', BillCtrl.updateBill);
-router.get('/id', BillCtrl.getBillByAppointmentId);
-router.get('/', BillCtrl.getAppointmentsByStatus);
-
+router.post('/bill', validateBillGeneration, patCtrl.generateBill);
+router.put('/bill/:id', validateBillUpdate, patCtrl.updateBill);
+router.get('/bill/:id', validateBillUpdate, patCtrl.getBillByAppointmentId);
+router.get('/bill', validateBillList, patCtrl.getAppointmentsByStatus);
 
 module.exports = router;
