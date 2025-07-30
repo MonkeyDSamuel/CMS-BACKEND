@@ -1,5 +1,26 @@
 const { Patient, Appointment, Billing } = require('../models/receptionist');
 
+// Helper function to populate appointment with patient and doctor data
+const populateAppointment = async (appointment) => {
+    if (appointment.patient_id) {
+        const patient = await Patient.findOne({ Pat_Id: appointment.patient_id });
+        appointment.patient = patient;
+    }
+    // Note: Doctor and Staff data would need to be fetched from their respective models
+    return appointment;
+};
+
+// Helper function to populate billing with appointment data
+const populateBilling = async (billing) => {
+    if (billing.appointment_id) {
+        const appointment = await Appointment.findOne({ App_Id: billing.appointment_id });
+        if (appointment) {
+            billing.appointment = await populateAppointment(appointment);
+        }
+    }
+    return billing;
+};
+
 // Register Patient: POST /api/patients
 const registerPatient = async (req, res) => {
     try {
@@ -23,8 +44,8 @@ const registerPatient = async (req, res) => {
 const updatePatient = async (req, res) => {
     try {
         const { id } = req.params;
-        const patient = await Patient.findByIdAndUpdate(
-            id,
+        const patient = await Patient.findOneAndUpdate(
+            { Pat_Id: id },
             req.body,
             { new: true, runValidators: true }
         );
@@ -54,7 +75,7 @@ const updatePatient = async (req, res) => {
 const getPatientById = async (req, res) => {
     try {
         const { id } = req.params;
-        const patient = await Patient.findById(id);
+        const patient = await Patient.findOne({ Pat_Id: id });
         
         if (!patient) {
             return res.status(404).json({
@@ -87,7 +108,8 @@ const getAllPatients = async (req, res) => {
             query.$or = [
                 { name: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } },
-                { phone: { $regex: search, $options: 'i' } }
+                { phone: { $regex: search, $options: 'i' } },
+                { Pat_Id: { $regex: search, $options: 'i' } }
             ];
         }
         
@@ -121,8 +143,8 @@ const getAllPatients = async (req, res) => {
 const deactivatePatient = async (req, res) => {
     try {
         const { id } = req.params;
-        const patient = await Patient.findByIdAndUpdate(
-            id,
+        const patient = await Patient.findOneAndUpdate(
+            { Pat_Id: id },
             { status: 'inactive' },
             { new: true }
         );
@@ -153,17 +175,17 @@ const scheduleAppointment = async (req, res) => {
     try {
         const appointment = new Appointment({
             ...req.body,
-            created_by_staff: req.user?.id || 'staff_id' // Assuming user is authenticated
+            created_by_staff: req.user?.id || 1 // Assuming user is authenticated
         });
         await appointment.save();
         
-        // Populate patient and doctor details
-        await appointment.populate(['patient_id', 'doctor_id']);
+        // Manually populate patient data
+        const populatedAppointment = await populateAppointment(appointment);
         
         res.status(201).json({
             success: true,
             message: 'Appointment scheduled successfully',
-            data: appointment
+            data: populatedAppointment
         });
     } catch (error) {
         res.status(400).json({
@@ -178,11 +200,11 @@ const scheduleAppointment = async (req, res) => {
 const updateAppointment = async (req, res) => {
     try {
         const { id } = req.params;
-        const appointment = await Appointment.findByIdAndUpdate(
-            id,
+        const appointment = await Appointment.findOneAndUpdate(
+            { App_Id: id },
             req.body,
             { new: true, runValidators: true }
-        ).populate(['patient_id', 'doctor_id']);
+        );
         
         if (!appointment) {
             return res.status(404).json({
@@ -191,10 +213,13 @@ const updateAppointment = async (req, res) => {
             });
         }
         
+        // Manually populate patient data
+        const populatedAppointment = await populateAppointment(appointment);
+        
         res.json({
             success: true,
             message: 'Appointment updated successfully',
-            data: appointment
+            data: populatedAppointment
         });
     } catch (error) {
         res.status(400).json({
@@ -209,8 +234,7 @@ const updateAppointment = async (req, res) => {
 const getAppointmentById = async (req, res) => {
     try {
         const { id } = req.params;
-        const appointment = await Appointment.findById(id)
-            .populate(['patient_id', 'doctor_id', 'created_by_staff']);
+        const appointment = await Appointment.findOne({ App_Id: id });
         
         if (!appointment) {
             return res.status(404).json({
@@ -219,9 +243,12 @@ const getAppointmentById = async (req, res) => {
             });
         }
         
+        // Manually populate patient data
+        const populatedAppointment = await populateAppointment(appointment);
+        
         res.json({
             success: true,
-            data: appointment
+            data: populatedAppointment
         });
     } catch (error) {
         res.status(500).json({
@@ -251,16 +278,20 @@ const getAppointmentsByDate = async (req, res) => {
         }
         
         const appointments = await Appointment.find(query)
-            .populate(['patient_id', 'doctor_id'])
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .sort({ scheduled_date: 1 });
+            
+        // Manually populate patient data for each appointment
+        const populatedAppointments = await Promise.all(
+            appointments.map(appointment => populateAppointment(appointment))
+        );
             
         const total = await Appointment.countDocuments(query);
         
         res.json({
             success: true,
-            data: appointments,
+            data: populatedAppointments,
             pagination: {
                 current_page: parseInt(page),
                 total_pages: Math.ceil(total / limit),
@@ -281,11 +312,11 @@ const getAppointmentsByDate = async (req, res) => {
 const cancelAppointment = async (req, res) => {
     try {
         const { id } = req.params;
-        const appointment = await Appointment.findByIdAndUpdate(
-            id,
+        const appointment = await Appointment.findOneAndUpdate(
+            { App_Id: id },
             { status: 'cancelled' },
             { new: true }
-        ).populate(['patient_id', 'doctor_id']);
+        );
         
         if (!appointment) {
             return res.status(404).json({
@@ -294,10 +325,13 @@ const cancelAppointment = async (req, res) => {
             });
         }
         
+        // Manually populate patient data
+        const populatedAppointment = await populateAppointment(appointment);
+        
         res.json({
             success: true,
             message: 'Appointment cancelled successfully',
-            data: appointment
+            data: populatedAppointment
         });
     } catch (error) {
         res.status(500).json({
@@ -314,7 +348,7 @@ const generateBill = async (req, res) => {
         const { appointment_id, amount } = req.body;
         
         // Check if appointment exists and is completed
-        const appointment = await Appointment.findById(appointment_id);
+        const appointment = await Appointment.findOne({ App_Id: appointment_id });
         if (!appointment) {
             return res.status(404).json({
                 success: false,
@@ -330,7 +364,7 @@ const generateBill = async (req, res) => {
         }
         
         // Check if bill already exists
-        const existingBill = await Billing.findOne({ appointment_id });
+        const existingBill = await Billing.findOne({ appointment_id: appointment_id });
         if (existingBill) {
             return res.status(400).json({
                 success: false,
@@ -339,21 +373,20 @@ const generateBill = async (req, res) => {
         }
         
         const bill = new Billing({
-            appointment_id,
+            appointment_id: appointment_id,
             amount,
             status: 'unpaid'
         });
         
         await bill.save();
-        await bill.populate({
-            path: 'appointment_id',
-            populate: ['patient_id', 'doctor_id']
-        });
+        
+        // Manually populate appointment data
+        const populatedBill = await populateBilling(bill);
         
         res.status(201).json({
             success: true,
             message: 'Bill generated successfully',
-            data: bill
+            data: populatedBill
         });
     } catch (error) {
         res.status(400).json({
@@ -368,14 +401,11 @@ const generateBill = async (req, res) => {
 const updateBill = async (req, res) => {
     try {
         const { id } = req.params;
-        const bill = await Billing.findByIdAndUpdate(
-            id,
+        const bill = await Billing.findOneAndUpdate(
+            { Bill_Id: id },
             req.body,
             { new: true, runValidators: true }
-        ).populate({
-            path: 'appointment_id',
-            populate: ['patient_id', 'doctor_id']
-        });
+        );
         
         if (!bill) {
             return res.status(404).json({
@@ -384,10 +414,13 @@ const updateBill = async (req, res) => {
             });
         }
         
+        // Manually populate appointment data
+        const populatedBill = await populateBilling(bill);
+        
         res.json({
             success: true,
             message: 'Bill updated successfully',
-            data: bill
+            data: populatedBill
         });
     } catch (error) {
         res.status(400).json({
@@ -402,11 +435,7 @@ const updateBill = async (req, res) => {
 const getBillByAppointmentId = async (req, res) => {
     try {
         const { id } = req.params;
-        const bill = await Billing.findOne({ appointment_id: id })
-            .populate({
-                path: 'appointment_id',
-                populate: ['patient_id', 'doctor_id']
-            });
+        const bill = await Billing.findOne({ appointment_id: id });
         
         if (!bill) {
             return res.status(404).json({
@@ -415,9 +444,12 @@ const getBillByAppointmentId = async (req, res) => {
             });
         }
         
+        // Manually populate appointment data
+        const populatedBill = await populateBilling(bill);
+        
         res.json({
             success: true,
-            data: bill
+            data: populatedBill
         });
     } catch (error) {
         res.status(500).json({
@@ -439,16 +471,20 @@ const getAppointmentsByStatus = async (req, res) => {
         }
         
         const appointments = await Appointment.find(query)
-            .populate(['patient_id', 'doctor_id'])
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .sort({ scheduled_date: 1 });
+            
+        // Manually populate patient data for each appointment
+        const populatedAppointments = await Promise.all(
+            appointments.map(appointment => populateAppointment(appointment))
+        );
             
         const total = await Appointment.countDocuments(query);
         
         res.json({
             success: true,
-            data: appointments,
+            data: populatedAppointments,
             pagination: {
                 current_page: parseInt(page),
                 total_pages: Math.ceil(total / limit),

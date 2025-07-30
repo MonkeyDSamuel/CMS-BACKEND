@@ -12,7 +12,7 @@ router.post('/patients', validatePatientRegistration, patCtrl.registerPatient);
 router.put('/patients/:id', validatePatientUpdate, patCtrl.updatePatient);
 router.get('/patients', validatePatientList, patCtrl.getAllPatients);
 router.get('/patients/:id', validatePatientId, patCtrl.getPatientById);
-router.patch('/patients/:id', patCtrl.deactivatePatient);
+router.patch('/patients/:id/deactivate', patCtrl.deactivatePatient);
 
 const {validateAppointmentSchedule} = require('../validators/receptionistValidator');
 const {validateAppointmentUpdate} = require('../validators/receptionistValidator');

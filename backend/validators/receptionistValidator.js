@@ -47,8 +47,8 @@ const validatePatientRegistration = [
 
 const validatePatientUpdate = [
     param('id')
-        .isMongoId()
-        .withMessage('Invalid patient ID'),
+        .matches(/^PAT\d+$/)
+        .withMessage('Invalid patient ID format. Must be PAT followed by numbers (e.g., PAT123)'),
     body('name')
         .optional()
         .trim()
@@ -86,8 +86,8 @@ const validatePatientUpdate = [
 
 const validatePatientId = [
     param('id')
-        .isMongoId()
-        .withMessage('Invalid patient ID'),
+        .matches(/^PAT\d+$/)
+        .withMessage('Invalid patient ID format. Must be PAT followed by numbers (e.g., PAT123)'),
     handleValidationErrors
 ];
 
@@ -111,10 +111,10 @@ const validatePatientList = [
 // Appointment validators
 const validateAppointmentSchedule = [
     body('patient_id')
-        .isMongoId()
-        .withMessage('Invalid patient ID'),
+        .matches(/^PAT\d+$/)
+        .withMessage('Invalid patient ID format. Must be PAT followed by numbers (e.g., PAT123)'),
     body('doctor_id')
-        .isMongoId()
+        .isInt({ min: 1 })
         .withMessage('Invalid doctor ID'),
     body('scheduled_date')
         .isISO8601()
@@ -133,15 +133,15 @@ const validateAppointmentSchedule = [
 
 const validateAppointmentUpdate = [
     param('id')
-        .isMongoId()
-        .withMessage('Invalid appointment ID'),
+        .matches(/^APP\d+$/)
+        .withMessage('Invalid appointment ID format. Must be APP followed by numbers (e.g., APP123)'),
     body('patient_id')
         .optional()
-        .isMongoId()
-        .withMessage('Invalid patient ID'),
+        .matches(/^PAT\d+$/)
+        .withMessage('Invalid patient ID format. Must be PAT followed by numbers (e.g., PAT123)'),
     body('doctor_id')
         .optional()
-        .isMongoId()
+        .isInt({ min: 1 })
         .withMessage('Invalid doctor ID'),
     body('scheduled_date')
         .optional()
@@ -161,8 +161,8 @@ const validateAppointmentUpdate = [
 
 const validateAppointmentId = [
     param('id')
-        .isMongoId()
-        .withMessage('Invalid appointment ID'),
+        .matches(/^APP\d+$/)
+        .withMessage('Invalid appointment ID format. Must be APP followed by numbers (e.g., APP123)'),
     handleValidationErrors
 ];
 
@@ -189,8 +189,8 @@ const validateAppointmentList = [
 // Billing validators
 const validateBillGeneration = [
     body('appointment_id')
-        .isMongoId()
-        .withMessage('Invalid appointment ID'),
+        .matches(/^APP\d+$/)
+        .withMessage('Invalid appointment ID format. Must be APP followed by numbers (e.g., APP123)'),
     body('amount')
         .isFloat({ min: 0 })
         .withMessage('Amount must be a positive number'),
@@ -199,8 +199,8 @@ const validateBillGeneration = [
 
 const validateBillUpdate = [
     param('id')
-        .isMongoId()
-        .withMessage('Invalid bill ID'),
+        .matches(/^BIL\d+$/)
+        .withMessage('Invalid bill ID format. Must be BIL followed by numbers (e.g., BIL123)'),
     body('amount')
         .optional()
         .isFloat({ min: 0 })
