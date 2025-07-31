@@ -20,14 +20,10 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 const labtechRoutes = require('./routes/labtechRoutes');
-const medicineRoutes = require('./routes/medicineRoutes');
-const inventoryRoutes = require('./routes/inventoryRoutes');
 const pharmacistRoutes = require('./routes/pharmacistRoutes');
 
 // Register routes
 app.use('/api/labtech', labtechRoutes);
-app.use('/api/medicines', medicineRoutes);
-app.use('/api/inventories', inventoryRoutes);
 app.use('/api/pharmacist', pharmacistRoutes);
 
 // Server Start
