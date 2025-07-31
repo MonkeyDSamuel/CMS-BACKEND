@@ -3,12 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const doctorRoutes = require('./routes/doctorRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 8002;
 
 app.use(cors());
 app.use(express.json());
+app.use(doctorRoutes);
 
 
 // Register admin routes
