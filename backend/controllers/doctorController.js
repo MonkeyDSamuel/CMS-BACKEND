@@ -7,7 +7,14 @@ const {
 // 3.1 Consultation Notes
 exports.addConsultationNote = async (req, res) => {
   try {
-    const consultation = new Consultation(req.body);
+    // Use verified appointment ID from middleware
+    const consultationData = {
+      ...req.body,
+      Appointment_Id: req.verifiedAppointmentId || req.body.Appointment_Id,
+      Doctor_Id: req.verifiedDoctorId || req.body.Doctor_Id
+    };
+    
+    const consultation = new Consultation(consultationData);
     await consultation.save();
     res.status(201).json(consultation);
   } catch (err) {
@@ -31,7 +38,7 @@ exports.updateConsultationNote = async (req, res) => {
 
 exports.getConsultationByAppointmentId = async (req, res) => {
   try {
-    const consultation = await Consultation.findOne({ Appointment_Id: req.params.appointmentId });
+    const consultation = await Consultation.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!consultation) return res.status(404).json({ error: 'Consultation not found' });
     res.json(consultation);
   } catch (err) {
@@ -41,7 +48,7 @@ exports.getConsultationByAppointmentId = async (req, res) => {
 
 exports.listConsultationsByDoctor = async (req, res) => {
   try {
-    const consultations = await Consultation.find({ Doctor_Id: req.params.doctorId });
+    const consultations = await Consultation.find({ Doctor_Id: req.verifiedDoctorId || req.params.doctorId });
     res.json(consultations);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -50,7 +57,7 @@ exports.listConsultationsByDoctor = async (req, res) => {
 
 exports.listConsultationsByPatient = async (req, res) => {
   try {
-    const consultations = await Consultation.find({ Patient_Id: req.params.patientId });
+    const consultations = await Consultation.find({ Patient_Id: req.verifiedPatientId || req.params.patientId });
     res.json(consultations);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -59,7 +66,7 @@ exports.listConsultationsByPatient = async (req, res) => {
 
 exports.getConsultationHistoryByAppointmentId = async (req, res) => {
   try {
-    const consultation = await Consultation.findOne({ Appointment_Id: req.params.appointmentId });
+    const consultation = await Consultation.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!consultation) return res.status(404).json({ error: 'Consultation not found' });
     res.json(consultation);
   } catch (err) {
@@ -70,7 +77,14 @@ exports.getConsultationHistoryByAppointmentId = async (req, res) => {
 // 3.2 Medicine Prescription
 exports.createMedicinePrescription = async (req, res) => {
   try {
-    const prescription = new MedicinePres(req.body);
+    // Use verified appointment ID from middleware
+    const prescriptionData = {
+      ...req.body,
+      Appointment_Id: req.verifiedAppointmentId || req.body.Appointment_Id,
+      Doctor_Id: req.verifiedDoctorId || req.body.Doctor_Id
+    };
+    
+    const prescription = new MedicinePres(prescriptionData);
     await prescription.save();
     res.status(201).json(prescription);
   } catch (err) {
@@ -94,7 +108,7 @@ exports.updateMedicinePrescription = async (req, res) => {
 
 exports.getMedicinePrescriptionByAppointmentId = async (req, res) => {
   try {
-    const prescription = await MedicinePres.findOne({ Appointment_Id: req.params.appointmentId });
+    const prescription = await MedicinePres.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!prescription) return res.status(404).json({ error: 'Prescription not found' });
     res.json(prescription);
   } catch (err) {
@@ -104,7 +118,14 @@ exports.getMedicinePrescriptionByAppointmentId = async (req, res) => {
 
 exports.listMedicinePrescriptionsByPatient = async (req, res) => {
   try {
-    const prescriptions = await MedicinePres.find({ Patient_Id: req.params.patientId });
+    // Get all appointments for the patient first
+    const { Appointment } = require('../models/receptionist');
+    const appointments = await Appointment.find({ patient_id: req.verifiedPatientId || req.params.patientId });
+    const appointmentIds = appointments.map(app => app.App_Id);
+    
+    const prescriptions = await MedicinePres.find({ 
+      Appointment_Id: { $in: appointmentIds } 
+    });
     res.json(prescriptions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -113,8 +134,8 @@ exports.listMedicinePrescriptionsByPatient = async (req, res) => {
 
 exports.listMedicinePrescriptionHistoryByPatient = async (req, res) => {
   try {
-    const prescriptions = await MedicinePres.find({ Patient_Id: req.params.patientId });
-    res.json(prescriptions);
+    // Reuse the existing function for consistency
+    return await exports.listMedicinePrescriptionsByPatient(req, res);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -122,7 +143,7 @@ exports.listMedicinePrescriptionHistoryByPatient = async (req, res) => {
 
 exports.listMedicinePrescriptionHistoryByDoctor = async (req, res) => {
   try {
-    const prescriptions = await MedicinePres.find({ Doctor_Id: req.params.doctorId });
+    const prescriptions = await MedicinePres.find({ Doctor_Id: req.verifiedDoctorId || req.params.doctorId });
     res.json(prescriptions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -131,7 +152,7 @@ exports.listMedicinePrescriptionHistoryByDoctor = async (req, res) => {
 
 exports.getMedicinePrescriptionHistoryByAppointmentId = async (req, res) => {
   try {
-    const prescription = await MedicinePres.findOne({ Appointment_Id: req.params.appointmentId });
+    const prescription = await MedicinePres.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!prescription) return res.status(404).json({ error: 'Prescription not found' });
     res.json(prescription);
   } catch (err) {
@@ -142,7 +163,14 @@ exports.getMedicinePrescriptionHistoryByAppointmentId = async (req, res) => {
 // 3.3 Lab Test Prescription
 exports.createLabTestPrescription = async (req, res) => {
   try {
-    const prescription = new LabPres(req.body);
+    // Use verified appointment ID from middleware
+    const prescriptionData = {
+      ...req.body,
+      Appointment_Id: req.verifiedAppointmentId || req.body.Appointment_Id,
+      Doctor_Id: req.verifiedDoctorId || req.body.Doctor_Id
+    };
+    
+    const prescription = new LabPres(prescriptionData);
     await prescription.save();
     res.status(201).json(prescription);
   } catch (err) {
@@ -166,7 +194,7 @@ exports.updateLabTestPrescription = async (req, res) => {
 
 exports.getLabTestPrescriptionByAppointmentId = async (req, res) => {
   try {
-    const prescription = await LabPres.findOne({ Appointment_Id: req.params.appointmentId });
+    const prescription = await LabPres.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!prescription) return res.status(404).json({ error: 'Lab Test Prescription not found' });
     res.json(prescription);
   } catch (err) {
@@ -176,7 +204,7 @@ exports.getLabTestPrescriptionByAppointmentId = async (req, res) => {
 
 exports.listLabTestPrescriptionsByPatient = async (req, res) => {
   try {
-    const prescriptions = await LabPres.find({ Patient_Id: req.params.patientId });
+    const prescriptions = await LabPres.find({ Patient_Id: req.verifiedPatientId || req.params.patientId });
     res.json(prescriptions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -185,7 +213,7 @@ exports.listLabTestPrescriptionsByPatient = async (req, res) => {
 
 exports.listLabTestPrescriptionHistoryByPatient = async (req, res) => {
   try {
-    const prescriptions = await LabPres.find({ Patient_Id: req.params.patientId });
+    const prescriptions = await LabPres.find({ Patient_Id: req.verifiedPatientId || req.params.patientId });
     res.json(prescriptions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -194,7 +222,7 @@ exports.listLabTestPrescriptionHistoryByPatient = async (req, res) => {
 
 exports.listLabTestPrescriptionHistoryByDoctor = async (req, res) => {
   try {
-    const prescriptions = await LabPres.find({ Doctor_Id: req.params.doctorId });
+    const prescriptions = await LabPres.find({ Doctor_Id: req.verifiedDoctorId || req.params.doctorId });
     res.json(prescriptions);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -203,7 +231,7 @@ exports.listLabTestPrescriptionHistoryByDoctor = async (req, res) => {
 
 exports.getLabTestPrescriptionHistoryByAppointmentId = async (req, res) => {
   try {
-    const prescription = await LabPres.findOne({ Appointment_Id: req.params.appointmentId });
+    const prescription = await LabPres.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!prescription) return res.status(404).json({ error: 'Lab Test Prescription not found' });
     res.json(prescription);
   } catch (err) {

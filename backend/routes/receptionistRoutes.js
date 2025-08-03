@@ -1,37 +1,31 @@
 const express = require('express');
 const router = express.Router();
+const receptionistController = require('../controllers/receptionistController');
+const { routeMiddleware } = require('../utils/routeUtils');
 
-const patCtrl = require('../controllers/receptionistController');
+// PATIENT MANAGEMENT
+router.post('/api/patients', ...routeMiddleware.receptionist, receptionistController.registerPatient);
+router.put('/api/patients/:id', ...routeMiddleware.receptionist, receptionistController.updatePatient);
+router.get('/api/patients/:id', ...routeMiddleware.receptionist, receptionistController.getPatientById);
+router.get('/api/patients', ...routeMiddleware.receptionist, receptionistController.listAllPatients);
+router.patch('/api/patients/:id/deactivate', ...routeMiddleware.receptionist, receptionistController.deactivatePatient);
 
-const {validatePatientRegistration} = require('../validators/receptionistValidator');
-const {validatePatientUpdate} = require('../validators/receptionistValidator');
-const {validatePatientId} = require('../validators/receptionistValidator');
-const {validatePatientList} = require('../validators/receptionistValidator');
+// APPOINTMENT MANAGEMENT
+router.post('/api/appointments', ...routeMiddleware.receptionist, receptionistController.scheduleAppointment);
+router.put('/api/appointments/:id', ...routeMiddleware.receptionist, receptionistController.updateAppointment);
+router.get('/api/appointments/:id', ...routeMiddleware.receptionist, receptionistController.getAppointmentById);
+router.get('/api/appointments', ...routeMiddleware.receptionist, receptionistController.getAppointmentsByDate);
+router.patch('/api/appointments/:id/cancel', ...routeMiddleware.receptionist, receptionistController.cancelAppointment);
 
-router.post('/patients', validatePatientRegistration, patCtrl.registerPatient);
-router.put('/patients/:id', validatePatientUpdate, patCtrl.updatePatient);
-router.get('/patients', validatePatientList, patCtrl.getAllPatients);
-router.get('/patients/:id', validatePatientId, patCtrl.getPatientById);
-router.patch('/patients/:id/deactivate', patCtrl.deactivatePatient);
+// CONSULTATION BILLING
+router.post('/api/billing', ...routeMiddleware.receptionist, receptionistController.generateBill);
+router.put('/api/billing/:appointmentId', ...routeMiddleware.receptionist, receptionistController.updateBill);
+router.get('/api/billing/:appointmentId', ...routeMiddleware.receptionist, receptionistController.getBillByAppointmentId);
+router.get('/api/billing', ...routeMiddleware.receptionist, receptionistController.getBillsByDateRange);
 
-const {validateAppointmentSchedule} = require('../validators/receptionistValidator');
-const {validateAppointmentUpdate} = require('../validators/receptionistValidator');
-const {validateAppointmentId} = require('../validators/receptionistValidator');
-const {validateAppointmentList} = require('../validators/receptionistValidator');
-
-router.post('/Appointment', validateAppointmentSchedule, patCtrl.scheduleAppointment);
-router.put('/Appointment/:id', validateAppointmentUpdate, patCtrl.updateAppointment);
-router.get('/Appointment/:id', validateAppointmentId, patCtrl.getAppointmentById);
-router.get('/Appointment', validateAppointmentList, patCtrl.getAppointmentsByDate);
-router.patch('/Appointment/:id', patCtrl.cancelAppointment);
-
-const {validateBillGeneration} = require('../validators/receptionistValidator');
-const {validateBillUpdate} = require('../validators/receptionistValidator');
-const {validateBillList} = require('../validators/receptionistValidator');
-
-router.post('/bill', validateBillGeneration, patCtrl.generateBill);
-router.put('/bill/:id', validateBillUpdate, patCtrl.updateBill);
-router.get('/bill/:id', validateBillUpdate, patCtrl.getBillByAppointmentId);
-router.get('/bill', validateBillList, patCtrl.getAppointmentsByStatus);
+// APPOINTMENT LISTING
+router.get('/api/appointments/patient/:patientId', ...routeMiddleware.receptionist, receptionistController.getAppointmentsByPatient);
+router.get('/api/appointments/doctor/:doctorId', ...routeMiddleware.receptionist, receptionistController.getAppointmentsByDoctor);
+router.get('/api/appointments/status/:status', ...routeMiddleware.receptionist, receptionistController.getAppointmentsByStatus);
 
 module.exports = router;

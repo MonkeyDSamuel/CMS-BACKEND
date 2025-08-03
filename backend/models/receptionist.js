@@ -63,10 +63,10 @@ PatientSchema.pre('save', async function(next) {
 const AppointmentSchema = new mongoose.Schema({
     App_Id: { type: String, unique: true },
     patient_id: { type: String, required: true },
-    doctor_id: { type: Number, required: true },
+    doctor_id: { type: String, required: true },
     scheduled_date: { type: Date, required: true },
     status: { type: String, enum: ['scheduled', 'completed', 'cancelled'], required: true },
-    created_by_staff: { type: Number, required: true },
+    created_by_staff: { type: String, required: true },
     notes: String
 }, { timestamps: true });
 

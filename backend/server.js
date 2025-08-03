@@ -1,8 +1,6 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
-
 // Import database connection
 const connectDB = require('./config/db');
 
@@ -12,6 +10,9 @@ const doctorRoutes = require('./routes/doctorRoutes');
 const labtechRoutes = require('./routes/labtechRoutes');
 const pharmacistRoutes = require('./routes/pharmacistRoutes');
 const receptionistRoutes = require('./routes/receptionistRoutes');
+const authRoutes = require('./login');
+
+const { globalErrorHandler } = require('./utils/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 8002;
@@ -21,11 +22,15 @@ app.use(cors());
 app.use(express.json());
 
 // Register routes
-app.use('/api/admin', adminRoutes);
-app.use('/api/doctor', doctorRoutes);
-app.use('/api/labtech', labtechRoutes);
-app.use('/api/pharmacist', pharmacistRoutes);
-app.use('/api/receptionist', receptionistRoutes);
+app.use('/', adminRoutes);
+app.use('/', doctorRoutes);
+app.use('/', labtechRoutes);
+app.use('/', pharmacistRoutes);
+app.use('/', receptionistRoutes);
+app.use('/', authRoutes);
+
+// Global error handler (must be last)
+app.use(globalErrorHandler);
 
 // Server Start
 connectDB().then(() => {

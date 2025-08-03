@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const pharmacistController = require('../controllers/pharmacistController');
-const { validateMedicine, validateInventory, runValidation } = require('../validators/pharmacistValidator');
+const { verifyToken, checkRole } = require('../login/auth');
 
-// Medicine Routes
-router.post('/medicines', validateMedicine, runValidation, pharmacistController.addMedicine);
-router.get('/medicines', pharmacistController.listAllMedicines);
-router.get('/medicines/:medicineId', pharmacistController.getMedicineById);
-router.put('/medicines/:medicineId', validateMedicine, runValidation, pharmacistController.updateMedicine);
-router.delete('/medicines/:medicineId', pharmacistController.deleteMedicine);
-router.patch('/medicines/:medicineId/deactivate', pharmacistController.deactivateMedicine);
+// MEDICINE MANAGEMENT
+router.post('/api/medicines', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.addMedicine);
+router.put('/api/medicines/:medicineId', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.updateMedicine);
+router.get('/api/medicines/:medicineId', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.getMedicineById);
+router.get('/api/medicines', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.listAllMedicines);
+router.patch('/api/medicines/:medicineId/deactivate', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.deactivateMedicine);
 
-// Inventory Routes
-router.post('/inventory', validateInventory, runValidation, pharmacistController.addInventory);
-router.get('/inventory', pharmacistController.getInventory);
-router.get('/inventory/:inventoryId', pharmacistController.getInventoryById);
-router.put('/inventory/:inventoryId', validateInventory, runValidation, pharmacistController.updateInventory);
-router.delete('/inventory/:inventoryId', pharmacistController.deleteInventory);
+// MEDICINE INVENTORY MANAGEMENT
+router.post('/api/inventory/medicine', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.addInventoryItem);
+router.put('/api/inventory/medicine/:medicineStockId', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.updateInventoryQuantity);
+router.get('/api/inventory/medicine/:medicineId', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.getInventoryByMedicineId);
+router.get('/api/inventory/medicine', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.listAllInventoryItems);
+router.patch('/api/inventory/medicine/:medicineStockId/flag-low', verifyToken, checkRole(['Pharmacist', 'Administrator']), pharmacistController.flagLowStock);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const { Patient, Appointment, Billing } = require('../models/receptionist');
+const { sendCreated, sendSuccess, sendNotFound, sendBadRequest, sendInternalError, asyncHandler } = require('../utils/errorHandler');
 
 // Helper function to populate appointment with patient and doctor data
 const populateAppointment = async (appointment) => {
@@ -22,80 +23,39 @@ const populateBilling = async (billing) => {
 };
 
 // Register Patient: POST /api/patients
-const registerPatient = async (req, res) => {
-    try {
-        const patient = new Patient(req.body);
-        await patient.save();
-        res.status(201).json({
-            success: true,
-            message: 'Patient registered successfully',
-            data: patient
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: 'Failed to register patient',
-            error: error.message
-        });
-    }
-};
+const registerPatient = asyncHandler(async (req, res) => {
+    const patient = new Patient(req.body);
+    await patient.save();
+    sendCreated(res, { data: patient }, 'Patient registered successfully');
+});
 
 // Update Patient Information: PUT /api/patients/{id}
-const updatePatient = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const patient = await Patient.findOneAndUpdate(
-            { Pat_Id: id },
-            req.body,
-            { new: true, runValidators: true }
-        );
-        
-        if (!patient) {
-            return res.status(404).json({
-                success: false,
-                message: 'Patient not found'
-            });
-        }
-        
-        res.json({
-            success: true,
-            message: 'Patient updated successfully',
-            data: patient
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: 'Failed to update patient',
-            error: error.message
-        });
+const updatePatient = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const patient = await Patient.findOneAndUpdate(
+        { Pat_Id: id },
+        req.body,
+        { new: true, runValidators: true }
+    );
+    
+    if (!patient) {
+        return sendNotFound(res, null, 'Patient not found');
     }
-};
+    
+    sendSuccess(res, { data: patient }, 'Patient updated successfully');
+});
 
 // Get Patient by ID: GET /api/patients/{id}
-const getPatientById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const patient = await Patient.findOne({ Pat_Id: id });
-        
-        if (!patient) {
-            return res.status(404).json({
-                success: false,
-                message: 'Patient not found'
-            });
-        }
-        
-        res.json({
-            success: true,
-            data: patient
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get patient',
-            error: error.message
-        });
+const getPatientById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const patient = await Patient.findOne({ Pat_Id: id });
+    
+    if (!patient) {
+        return sendNotFound(res, null, 'Patient not found');
     }
-};
+    
+    sendSuccess(res, { data: patient });
+});
 
 // List All Patients: GET /api/patients
 const getAllPatients = async (req, res) => {
@@ -501,6 +461,97 @@ const getAppointmentsByStatus = async (req, res) => {
     }
 };
 
+// Get Appointments by Patient: GET /api/appointments/patient/{patientId}
+const getAppointmentsByPatient = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        const appointments = await Appointment.find({ patient_id: patientId });
+        
+        // Manually populate patient data for each appointment
+        const populatedAppointments = await Promise.all(
+            appointments.map(appointment => populateAppointment(appointment))
+        );
+        
+        res.json({
+            success: true,
+            count: populatedAppointments.length,
+            data: populatedAppointments
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get appointments by patient',
+            error: error.message
+        });
+    }
+};
+
+// Get Appointments by Doctor: GET /api/appointments/doctor/{doctorId}
+const getAppointmentsByDoctor = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        const appointments = await Appointment.find({ doctor_id: doctorId });
+        
+        // Manually populate patient data for each appointment
+        const populatedAppointments = await Promise.all(
+            appointments.map(appointment => populateAppointment(appointment))
+        );
+        
+        res.json({
+            success: true,
+            count: populatedAppointments.length,
+            data: populatedAppointments
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get appointments by doctor',
+            error: error.message
+        });
+    }
+};
+
+// Get Bills by Date Range: GET /api/billing?startDate={startDate}&endDate={endDate}
+const getBillsByDateRange = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        if (!startDate || !endDate) {
+            return res.status(400).json({
+                success: false,
+                message: 'Start date and end date parameters are required'
+            });
+        }
+        
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setDate(end.getDate() + 1);
+        
+        const bills = await Billing.find({
+            createdAt: {
+                $gte: start,
+                $lt: end
+            }
+        });
+        
+        // Manually populate appointment data for each bill
+        const populatedBills = await Promise.all(
+            bills.map(bill => populateBilling(bill))
+        );
+        
+        res.json({
+            success: true,
+            count: populatedBills.length,
+            data: populatedBills
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get bills by date range',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     registerPatient,
     updatePatient,
@@ -515,6 +566,10 @@ module.exports = {
     generateBill,
     updateBill,
     getBillByAppointmentId,
-    getAppointmentsByStatus
+    getAppointmentsByStatus,
+    listAllPatients: getAllPatients,
+    getAppointmentsByPatient,
+    getAppointmentsByDoctor,
+    getBillsByDateRange
 }; 
 

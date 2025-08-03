@@ -1,47 +1,15 @@
-const { body, param, query, validationResult } = require('express-validator');
-
-// Validation result handler
-const handleValidationErrors = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            success: false,
-            message: 'Validation failed',
-            errors: errors.array()
-        });
-    }
-    next();
-};
+const { body, param, query } = require('express-validator');
+const { handleValidationErrors, validationSets } = require('../utils/validationUtils');
 
 // Patient validators
 const validatePatientRegistration = [
-    body('name')
-        .trim()
-        .isLength({ min: 2, max: 50 })
-        .withMessage('Name must be between 2 and 50 characters'),
-    body('dob')
-        .isISO8601()
-        .withMessage('Date of birth must be a valid date'),
-    body('gender')
-        .isIn(['Male', 'Female', 'Other'])
-        .withMessage('Gender must be Male, Female, or Other'),
-    body('Blood_group')
-        .trim()
-        .isLength({ min: 1 })
-        .withMessage('Blood group is required'),
-    body('email')
-        .optional()
-        .isEmail()
-        .withMessage('Email must be a valid email address'),
-    body('phone')
-        .trim()
-        .isLength({ min: 10, max: 15 })
-        .withMessage('Phone number must be between 10 and 15 characters'),
-    body('address')
-        .optional()
-        .trim()
-        .isLength({ max: 500 })
-        .withMessage('Address must not exceed 500 characters'),
+    validationSets.patient.name,
+    validationSets.patient.dob,
+    validationSets.patient.gender,
+    validationSets.patient.bloodGroup,
+    validationSets.patient.email,
+    validationSets.patient.phone,
+    validationSets.patient.address,
     handleValidationErrors
 ];
 

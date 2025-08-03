@@ -5,6 +5,7 @@ const StaffSchema = new mongoose.Schema({
     Staff_Id: { type: String, unique: true },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     phone: { type: String },
     dob: { type: Date, required: true },
     role: {
@@ -38,9 +39,11 @@ const DoctorSchema = new mongoose.Schema({
     Doctor_Id: { type: String, unique: true },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     phone: { type: String, required: true },
     dob: { type: Date, required: true },
     specialization: { type: String, ref: 'Specialization', required: true }, // references Specialization_Id
+    assigned_patients: [{ type: String, ref: 'Patient' }], // Array of Patient_Id values
     isActive: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });

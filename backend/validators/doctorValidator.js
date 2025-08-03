@@ -130,12 +130,12 @@ const validateCreateMedicinePrescription = [
     .withMessage('Doctor ID must be a string')
     .trim(),
   
-  body('Medicine_Id')
+  body('medicine_id')
     .isArray({ min: 1 })
     .withMessage('At least one medicine ID is required')
     .custom((value) => {
       if (!Array.isArray(value)) {
-        throw new Error('Medicine_Id must be an array');
+        throw new Error('medicine_id must be an array');
       }
       if (value.length === 0) {
         throw new Error('At least one medicine ID is required');
@@ -179,13 +179,13 @@ const validateUpdateMedicinePrescription = [
     .withMessage('Doctor ID must be a string')
     .trim(),
   
-  body('Medicine_Id')
+  body('medicine_id')
     .optional()
     .isArray({ min: 1 })
     .withMessage('At least one medicine ID is required')
     .custom((value) => {
       if (!Array.isArray(value)) {
-        throw new Error('Medicine_Id must be an array');
+        throw new Error('medicine_id must be an array');
       }
       if (value.length === 0) {
         throw new Error('At least one medicine ID is required');

@@ -10,6 +10,18 @@ const validateLabTest = [
     .optional()
     .isString().withMessage('Description must be a string')
     .isLength({ max: 500 }).withMessage('Description must not exceed 500 characters'),
+  body('min_reading')
+    .notEmpty().withMessage('Minimum reading is required')
+    .isNumeric().withMessage('Minimum reading must be a number'),
+  body('max_reading')
+    .notEmpty().withMessage('Maximum reading is required')
+    .isNumeric().withMessage('Maximum reading must be a number')
+    .custom((value, { req }) => {
+      if (parseFloat(value) <= parseFloat(req.body.min_reading)) {
+        throw new Error('Maximum reading must be greater than minimum reading');
+      }
+      return true;
+    }),
   body('status')
     .optional()
     .isIn(['available', 'unavailable']).withMessage('Status must be either available or unavailable')
@@ -17,9 +29,6 @@ const validateLabTest = [
 
 // Validation for LabTestResult creation and update
 const validateLabTestResult = [
-  body('labRes_id')
-    .notEmpty().withMessage('Lab Result ID is required')
-    .isString().withMessage('Lab Result ID must be a string'),
   body('lab_test_id')
     .notEmpty().withMessage('Lab Test ID is required')
     .isString().withMessage('Lab Test ID must be a string'),

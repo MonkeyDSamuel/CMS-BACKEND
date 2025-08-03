@@ -1,5 +1,4 @@
-const { Medicine, Inventory } = require('../models/pharmacist');
-const { v4: uuidv4 } = require('uuid');
+const { Medicine, MedicineCounter } = require('../models/pharmacist');
 
 const pharmacistController = {
   // Medicine CRUD Operations
@@ -7,8 +6,7 @@ const pharmacistController = {
     try {
       const med = new Medicine({
         ...req.body,
-        medicine_id: 'MED-' + uuidv4(),
-        createdAt: new Date(),
+        addedAt: new Date(),
         updatedAt: new Date()
       });
       await med.save();
@@ -74,11 +72,15 @@ const pharmacistController = {
 
   listAllMedicines: async (req, res) => {
     try {
-      const { status, search } = req.query;
+      const { status, search, low_stock } = req.query;
       let query = {};
       
       if (status) {
         query.status = status;
+      }
+      
+      if (low_stock === 'true') {
+        query.low_stock_flag = true;
       }
       
       if (search) {
@@ -88,7 +90,7 @@ const pharmacistController = {
         ];
       }
       
-      const meds = await Medicine.find(query).sort({ createdAt: -1 });
+      const meds = await Medicine.find(query).sort({ addedAt: -1 });
       res.json({
         success: true,
         count: meds.length,
@@ -149,52 +151,29 @@ const pharmacistController = {
     }
   },
 
-  // Inventory CRUD Operations
-  addInventory: async (req, res) => {
+  // Update medicine quantity
+  updateMedicineQuantity: async (req, res) => {
     try {
       const { quantity } = req.body;
-      const data = {
-        ...req.body,
-        low_stock_flag: quantity < 10,
-        status: quantity > 0 ? 'in_stock' : 'out_of_stock'
-      };
-      const inv = new Inventory(data);
-      await inv.save();
-      res.status(201).json({
-        success: true,
-        message: 'Inventory added successfully',
-        data: inv
-      });
-    } catch (err) {
-      res.status(400).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  updateInventory: async (req, res) => {
-    try {
-      const { quantity } = req.body;
-      const updated = await Inventory.findOneAndUpdate(
-        { inventory_id: req.params.inventoryId },
-        {
+      const updated = await Medicine.findByIdAndUpdate(
+        req.params.medicineId,
+        { 
           quantity,
-          updatedAt: new Date(),
-          low_stock_flag: quantity < 10,
-          status: quantity > 0 ? 'in_stock' : 'out_of_stock'
+          updatedAt: new Date()
         },
         { new: true, runValidators: true }
       );
+      
       if (!updated) {
         return res.status(404).json({ 
           success: false,
-          error: 'Inventory not found' 
+          error: 'Medicine not found' 
         });
       }
+      
       res.json({
         success: true,
-        message: 'Inventory updated successfully',
+        message: 'Medicine quantity updated successfully',
         data: updated
       });
     } catch (err) {
@@ -205,24 +184,14 @@ const pharmacistController = {
     }
   },
 
-  getInventory: async (req, res) => {
+  // Get low stock medicines
+  getLowStockMedicines: async (req, res) => {
     try {
-      const { status, low_stock } = req.query;
-      let query = {};
-      
-      if (status) {
-        query.status = status;
-      }
-      
-      if (low_stock === 'true') {
-        query.low_stock_flag = true;
-      }
-      
-      const inv = await Inventory.find(query).sort({ updatedAt: -1 });
+      const meds = await Medicine.find({ low_stock_flag: true }).sort({ updatedAt: -1 });
       res.json({
         success: true,
-        count: inv.length,
-        data: inv
+        count: meds.length,
+        data: meds
       });
     } catch (err) {
       res.status(500).json({ 
@@ -232,42 +201,95 @@ const pharmacistController = {
     }
   },
 
-  getInventoryById: async (req, res) => {
+  // MEDICINE INVENTORY MANAGEMENT
+  addInventoryItem: async (req, res) => {
+    // Reuse addMedicine function for consistency
+    return await pharmacistController.addMedicine(req, res);
+  },
+
+  updateInventoryQuantity: async (req, res) => {
     try {
-      const inv = await Inventory.findOne({ inventory_id: req.params.inventoryId });
-      if (!inv) {
+      const medicine = await Medicine.findOneAndUpdate(
+        { medicine_id: req.params.medicineStockId },
+        { ...req.body, updatedAt: new Date() },
+        { new: true, runValidators: true }
+      );
+      if (!medicine) {
         return res.status(404).json({ 
           success: false,
-          error: 'Inventory not found' 
+          error: 'Medicine inventory not found' 
         });
       }
       res.json({
         success: true,
-        data: inv
+        message: 'Inventory quantity updated successfully',
+        data: medicine
       });
     } catch (err) {
-      res.status(500).json({ 
+      res.status(400).json({ 
         success: false,
         error: err.message 
       });
     }
   },
 
-  deleteInventory: async (req, res) => {
+  getInventoryByMedicineId: async (req, res) => {
     try {
-      const inv = await Inventory.findOneAndDelete({ inventory_id: req.params.inventoryId });
-      if (!inv) {
+      const medicine = await Medicine.findOne({ medicine_id: req.params.medicineId });
+      if (!medicine) {
         return res.status(404).json({ 
           success: false,
-          error: 'Inventory not found' 
+          error: 'Medicine inventory not found' 
         });
       }
       res.json({
         success: true,
-        message: 'Inventory deleted successfully'
+        data: medicine
       });
     } catch (err) {
-      res.status(500).json({ 
+      res.status(400).json({ 
+        success: false,
+        error: err.message 
+      });
+    }
+  },
+
+  listAllInventoryItems: async (req, res) => {
+    try {
+      const medicines = await Medicine.find().sort({ updatedAt: -1 });
+      res.json({
+        success: true,
+        count: medicines.length,
+        data: medicines
+      });
+    } catch (err) {
+      res.status(400).json({ 
+        success: false,
+        error: err.message 
+      });
+    }
+  },
+
+  flagLowStock: async (req, res) => {
+    try {
+      const medicine = await Medicine.findOneAndUpdate(
+        { medicine_id: req.params.medicineStockId },
+        { low_stock_flag: true, updatedAt: new Date() },
+        { new: true }
+      );
+      if (!medicine) {
+        return res.status(404).json({ 
+          success: false,
+          error: 'Medicine inventory not found' 
+        });
+      }
+      res.json({
+        success: true,
+        message: 'Medicine flagged as low stock',
+        data: medicine
+      });
+    } catch (err) {
+      res.status(400).json({ 
         success: false,
         error: err.message 
       });

@@ -1,0 +1,2203 @@
+{
+	"info": {
+		"_postman_id": "clinic-management-api",
+		"name": "Clinic Management System API",
+		"description": "Complete API collection for Clinic Management System with authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Admin Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"pass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/admin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Receptionist Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"receptionist_Id\": \"REC0001\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/receptionist",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"receptionist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Doctor Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"doctor_Id\": \"DOC0001\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/doctor",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"doctor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lab Technician Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"labtech_Id\": \"LAB0001\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/labtech",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"labtech"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pharmacist Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pharmacist_Id\": \"PHM0001\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/pharmacist",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"pharmacist"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Administrator",
+			"item": [
+				{
+					"name": "Staff Management",
+					"item": [
+						{
+							"name": "Create Staff",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@clinic.com\",\n  \"password\": \"password123\",\n  \"phone\": \"1234567890\",\n  \"dob\": \"1990-01-01\",\n  \"role\": \"Receptionist\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/staff",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"staff"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Staff",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/staff",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"staff"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Staff by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/staff/REC0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"staff",
+										"REC0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Staff",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"John Doe Updated\",\n  \"phone\": \"9876543210\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/staff/REC0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"staff",
+										"REC0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivate Staff",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/staff/REC0001/deactivate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"staff",
+										"REC0001",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Doctor Management",
+					"item": [
+						{
+							"name": "Create Doctor",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Dr. Smith\",\n  \"email\": \"smith@clinic.com\",\n  \"password\": \"password123\",\n  \"phone\": \"1234567890\",\n  \"dob\": \"1980-01-01\",\n  \"specialization\": \"Cardiology\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/doctors",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"doctors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Doctors",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/doctors",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"doctors"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Patient Assignment Management",
+					"item": [
+						{
+							"name": "Assign Patients to Doctor",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"patientIds\": [\"PAT0001\", \"PAT0002\", \"PAT0003\"]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/doctors/DOC0001/assign-patients",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"doctors",
+										"DOC0001",
+										"assign-patients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Patients from Doctor",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"patientIds\": [\"PAT0002\"]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/doctors/DOC0001/remove-patients",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"doctors",
+										"DOC0001",
+										"remove-patients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Doctor's Assigned Patients",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/doctors/DOC0001/assigned-patients",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"doctors",
+										"DOC0001",
+										"assigned-patients"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Specialization Management",
+					"item": [
+						{
+							"name": "Create Specialization",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Cardiology\",\n  \"description\": \"Heart and cardiovascular system\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/specializations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"specializations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Specializations",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/specializations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"specializations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Receptionist",
+			"item": [
+				{
+					"name": "Patient Management",
+					"item": [
+						{
+							"name": "Register Patient",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Jane Doe\",\n  \"dob\": \"1995-05-15\",\n  \"gender\": \"Female\",\n  \"Blood_group\": \"O+\",\n  \"email\": \"jane@email.com\",\n  \"phone\": \"1234567890\",\n  \"address\": \"123 Main St\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/patients",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"patients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Patient Information",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Jane Smith\",\n  \"dob\": \"1995-05-15\",\n  \"gender\": \"Female\",\n  \"Blood_group\": \"O+\",\n  \"email\": \"jane.smith@email.com\",\n  \"phone\": \"1234567890\",\n  \"address\": \"456 Oak St\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/patients/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"patients",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Patient by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/patients/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"patients",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List All Patients",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/patients",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"patients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivate Patient",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/patients/PAT0001/deactivate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"patients",
+										"PAT0001",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Appointment Management",
+					"item": [
+						{
+							"name": "Schedule Appointment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"patient_id\": \"PAT0001\",\n  \"doctor_id\": \"DOC0001\",\n  \"scheduled_date\": \"2024-01-15T10:00:00Z\",\n  \"status\": \"scheduled\",\n  \"notes\": \"Regular checkup\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/appointments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Appointment",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"patient_id\": \"PAT0001\",\n  \"doctor_id\": \"DOC0001\",\n  \"scheduled_date\": \"2024-01-16T14:00:00Z\",\n  \"status\": \"rescheduled\",\n  \"notes\": \"Rescheduled due to doctor availability\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/appointments/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Appointment by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/appointments/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Appointments by Date",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/appointments?date=2024-01-15",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments"
+									],
+									"query": [
+										{
+											"key": "date",
+											"value": "2024-01-15"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel Appointment",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/appointments/APP0001/cancel",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments",
+										"APP0001",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Consultation Billing",
+					"item": [
+						{
+							"name": "Generate Appointment Bill",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"appointment_id\": \"APP0001\",\n  \"consultation_fee\": 50.00,\n  \"lab_test_fee\": 25.00,\n  \"medicine_fee\": 15.00,\n  \"total_amount\": 90.00,\n  \"payment_status\": \"pending\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/billing",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"billing"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Appointment Bill",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"consultation_fee\": 60.00,\n  \"lab_test_fee\": 30.00,\n  \"medicine_fee\": 20.00,\n  \"total_amount\": 110.00,\n  \"payment_status\": \"paid\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/billing/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"billing",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Bill by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/billing/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"billing",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Bills by Date Range",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/billing?startDate=2024-01-01&endDate=2024-01-31",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"billing"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2024-01-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2024-01-31"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Appointment Listing",
+					"item": [
+						{
+							"name": "List Appointments by Patient",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/appointments/patient/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments",
+										"patient",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Appointments by Doctor",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/appointments/doctor/DOC0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments",
+										"doctor",
+										"DOC0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Appointments with Status",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{receptionist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/appointments?status=scheduled",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"appointments"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "scheduled"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Doctor",
+			"item": [
+				{
+					"name": "Consultation Notes",
+					"item": [
+						{
+							"name": "Add Consultation Note",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Appointment_Id\": \"APP0001\",\n  \"Doctor_Id\": \"DOC0001\",\n  \"Notes\": \"Patient shows symptoms of common cold. Temperature: 37.5°C, Blood Pressure: 120/80. Prescribed rest and fluids.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/consultations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"consultations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Consultation Note",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Appointment_Id\": \"APP0001\",\n  \"Doctor_Id\": \"DOC0001\",\n  \"Notes\": \"Updated: Patient condition improved. Temperature: 36.8°C, Blood Pressure: 118/78. Continue with prescribed medication.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/consultations/CON0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"consultations",
+										"CON0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Consultation Note by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/consultations/appointment/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"consultations",
+										"appointment",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Consultation Notes by Doctor",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/consultations/doctor/DOC0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"consultations",
+										"doctor",
+										"DOC0001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Medicine Prescription",
+					"item": [
+						{
+							"name": "Create Medicine Prescription",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Appointment_Id\": \"APP0001\",\n  \"Doctor_Id\": \"DOC0001\",\n  \"medicine_id\": [\"MED0001\", \"MED0002\"],\n  \"dosage\": \"1 tablet twice daily\",\n  \"duration\": \"7 days\",\n  \"Notes\": \"Take after meals. Avoid alcohol.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Medicine Prescription",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Appointment_Id\": \"APP0001\",\n  \"Doctor_Id\": \"DOC0001\",\n  \"medicine_id\": [\"MED0001\", \"MED0003\"],\n  \"dosage\": \"1 tablet three times daily\",\n  \"duration\": \"10 days\",\n  \"Notes\": \"Updated prescription. Take with food.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine/PRE0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine",
+										"PRE0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Prescription by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine/appointment/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine",
+										"appointment",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Prescriptions by Patient",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine/patient/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine",
+										"patient",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Lab Test Prescription",
+					"item": [
+						{
+							"name": "Create Lab Test Prescription",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Appointment_Id\": \"APP0001\",\n  \"Doctor_Id\": \"DOC0001\",\n  \"Labtest_Id\": [\"LABTEST0001\", \"LABTEST0002\"],\n  \"Notes\": \"Blood test and urine analysis required. Fasting required for 12 hours.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/labtest",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"labtest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Lab Test Prescription",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Appointment_Id\": \"APP0001\",\n  \"Doctor_Id\": \"DOC0001\",\n  \"Labtest_Id\": [\"LABTEST0001\", \"LABTEST0003\"],\n  \"Notes\": \"Updated: Additional cholesterol test required. Fasting for 14 hours.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/labtest/LABPRE0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"labtest",
+										"LABPRE0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Lab Test Prescription by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/labtest/appointment/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"labtest",
+										"appointment",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Lab Test Prescriptions by Patient",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/labtest/patient/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"labtest",
+										"patient",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Consultation History",
+					"item": [
+						{
+							"name": "List Consultation History by Patient",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/consultations/patient/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"consultations",
+										"patient",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						},
+
+						{
+							"name": "Get Consultation History by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/consultations/history/appointment/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"consultations",
+										"history",
+										"appointment",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Medicine Prescription History",
+					"item": [
+						{
+							"name": "List Medicine Prescription History by Patient",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine/history/patient/PAT0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine",
+										"history",
+										"patient",
+										"PAT0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Medicine Prescription History by Doctor",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine/history/doctor/DOC0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine",
+										"history",
+										"doctor",
+										"DOC0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Medicine Prescription History by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{doctor_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/prescriptions/medicine/history/appointment/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"prescriptions",
+										"medicine",
+										"history",
+										"appointment",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Lab Technician",
+			"item": [
+				{
+					"name": "Lab Test Management",
+					"item": [
+						{
+							"name": "Add New Lab Test",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Blood Test\",\n  \"description\": \"Complete blood count test\",\n  \"min_reading\": 70,\n  \"max_reading\": 140\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/labtests",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Lab Test Details",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Complete Blood Count\",\n  \"description\": \"Updated complete blood count test with detailed parameters\",\n  \"min_reading\": 65,\n  \"max_reading\": 145\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/labtests/LABTEST0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"LABTEST0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Lab Test by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/labtests/LABTEST0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"LABTEST0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List All Lab Tests",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/labtests",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivate Lab Test",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/labtests/LABTEST0001/deactivate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"LABTEST0001",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Lab Test Prescription Management",
+					"item": [
+						{
+							"name": "Record Lab Test Result",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"result_notes\": \"Normal blood count with all parameters within normal range\",\n  \"status\": \"completed\",\n  \"date_tested\": \"2024-01-15T10:30:00Z\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/labtests/results/LABPRES0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"results",
+										"LABPRES0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Lab Test Result by Appointment ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/labtests/results/appointment/APP0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"results",
+										"appointment",
+										"APP0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Lab Test Results by Date Range",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/labtests/results?startDate=2024-01-01&endDate=2024-01-31",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"results"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2024-01-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2024-01-31"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivate Lab Test Prescription",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/labtests/LABPRES0001/deactivate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"LABPRES0001",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Lab Test Results",
+					"item": [
+						{
+							"name": "Create Lab Test Result",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"lab_test_id\": \"LABTEST0001\",\n  \"app_id\": \"APP0001\",\n  \"doc_id\": \"DOC0001\",\n  \"result_notes\": \"Patient blood test results\",\n  \"status\": \"completed\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/labtest-results",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtest-results"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Record Lab Test Result",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{labtech_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"result_notes\": \"Normal blood count\",\n  \"status\": \"completed\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/labtests/results/LABRES0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"labtests",
+										"results",
+										"LABRES0001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Pharmacist",
+			"item": [
+				{
+					"name": "Medicine Management",
+					"item": [
+						{
+							"name": "Add New Medicine",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Paracetamol\",\n  \"description\": \"Pain reliever\",\n  \"quantity\": 100,\n  \"price_per_unit\": 5.50\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/medicines",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"medicines"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Medicine Details",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Paracetamol 500mg\",\n  \"description\": \"Updated pain reliever with specific dosage\",\n  \"quantity\": 150,\n  \"price_per_unit\": 6.00\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/medicines/MED0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"medicines",
+										"MED0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Medicine by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/medicines/MED0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"medicines",
+										"MED0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List All Medicines",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/medicines",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"medicines"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivate Medicine",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/medicines/MED0001/deactivate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"medicines",
+										"MED0001",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Medicine Inventory Management",
+					"item": [
+						{
+							"name": "Add New Inventory Item",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Aspirin\",\n  \"description\": \"Pain reliever\",\n  \"quantity\": 50,\n  \"price_per_unit\": 3.00\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/inventory/medicine",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"medicine"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Inventory Quantity",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"quantity\": 75,\n  \"price_per_unit\": 3.50\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/inventory/medicine/MEDSTOCK0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"medicine",
+										"MEDSTOCK0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Inventory by Medicine ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/inventory/medicine/MED0001",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"medicine",
+										"MED0001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List All Inventory Items",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/inventory/medicine",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"medicine"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Flag Low Stock",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{pharmacist_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/inventory/medicine/MEDSTOCK0001/flag-low",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"medicine",
+										"MEDSTOCK0001",
+										"flag-low"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8002",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "receptionist_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "doctor_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "labtech_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pharmacist_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 
