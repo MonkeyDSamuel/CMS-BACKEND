@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 // Staff Schema
 const StaffSchema = new mongoose.Schema({
@@ -79,6 +80,21 @@ DoctorSchema.pre('save', async function(next) {
     next();
 });
 
+// Pre-save middleware to hash password for doctors
+DoctorSchema.pre('save', async function(next) {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified('password')) return next();
+    
+    try {
+        // Hash password with salt rounds of 10
+        const hashedPassword = await bcrypt.hash(this.password, 10);
+        this.password = hashedPassword;
+        next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
 // Pre-save middleware to auto-generate Staff_Id based on role
 StaffSchema.pre('save', async function(next) {
     if (this.isNew && !this.Staff_Id) {
@@ -129,6 +145,21 @@ SpecializationSchema.pre('save', async function(next) {
         }
     }
     next();
+});
+
+// Pre-save middleware to hash password before saving
+StaffSchema.pre('save', async function(next) {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified('password')) return next();
+    
+    try {
+        // Hash password with salt rounds of 10
+        const hashedPassword = await bcrypt.hash(this.password, 10);
+        this.password = hashedPassword;
+        next();
+    } catch (error) {
+        return next(error);
+    }
 });
 
 const Staff = mongoose.model('Staff', StaffSchema);
