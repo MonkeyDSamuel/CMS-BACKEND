@@ -160,6 +160,16 @@ exports.getMedicinePrescriptionHistoryByAppointmentId = async (req, res) => {
   }
 };
 
+exports.deleteMedicinePrescription = async (req, res) => {
+  try {
+    const deleted = await MedicinePres.findOneAndDelete({ Prescription_Id: req.params.prescriptionId });
+    if (!deleted) return res.status(404).json({ error: 'Prescription not found' });
+    res.json({ message: 'Prescription deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 // 3.3 Lab Test Prescription
 exports.createLabTestPrescription = async (req, res) => {
   try {
@@ -234,6 +244,16 @@ exports.getLabTestPrescriptionHistoryByAppointmentId = async (req, res) => {
     const prescription = await LabPres.findOne({ Appointment_Id: req.verifiedAppointmentId || req.params.appointmentId });
     if (!prescription) return res.status(404).json({ error: 'Lab Test Prescription not found' });
     res.json(prescription);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.deleteLabTestPrescription = async (req, res) => {
+  try {
+    const deleted = await LabPres.findOneAndDelete({ LabPrescription_Id: req.params.prescriptionId });
+    if (!deleted) return res.status(404).json({ error: 'Lab Test Prescription not found' });
+    res.json({ message: 'Lab Test Prescription deleted successfully' });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

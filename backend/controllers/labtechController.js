@@ -1,7 +1,8 @@
-const { LabTest, LabTestResult } = require('../models/labtech');
+const { LabTest } = require('../models/labtech');
+const { LabPres } = require('../models/doctor');
 
 const labtechController = {
-  // Lab Test CRUD Operations
+  // Lab Test CRUD Operations (unchanged)
   createLabTest: async (req, res) => {
     try {
       const labtest = new LabTest({
@@ -147,86 +148,14 @@ const labtechController = {
     }
   },
 
-  // Lab Test Results CRUD Operations
-  createLabTestResult: async (req, res) => {
+  // Lab Test Prescription Management (unified)
+  listAllLabTestPrescriptions: async (req, res) => {
     try {
-      const result = new LabTestResult({
-        ...req.body,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      await result.save();
-      res.status(201).json({
-        success: true,
-        message: 'Lab test result created successfully',
-        data: result
-      });
-    } catch (err) {
-      res.status(400).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  updateLabTestResult: async (req, res) => {
-    try {
-      const updated = await LabTestResult.findByIdAndUpdate(
-        req.params.resultId,
-        { ...req.body, updatedAt: new Date() },
-        { new: true, runValidators: true }
-      );
-      if (!updated) {
-        return res.status(404).json({ 
-          success: false,
-          error: 'Lab test result not found' 
-        });
-      }
-      res.json({
-        success: true,
-        message: 'Lab test result updated successfully',
-        data: updated
-      });
-    } catch (err) {
-      res.status(400).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  getLabTestResultById: async (req, res) => {
-    try {
-      const result = await LabTestResult.findById(req.params.resultId);
-      if (!result) {
-        return res.status(404).json({ 
-          success: false,
-          error: 'Lab test result not found' 
-        });
-      }
-      res.json({
-        success: true,
-        data: result
-      });
-    } catch (err) {
-      res.status(500).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  listAllLabTestResults: async (req, res) => {
-    try {
-      const { status, startDate, endDate, lab_test_id } = req.query;
+      const { status, startDate, endDate } = req.query;
       let query = {};
       
       if (status) {
         query.status = status;
-      }
-      
-      if (lab_test_id) {
-        query.lab_test_id = lab_test_id;
       }
       
       if (startDate && endDate) {
@@ -236,11 +165,11 @@ const labtechController = {
         };
       }
       
-      const results = await LabTestResult.find(query).sort({ date_tested: -1 });
+      const prescriptions = await LabPres.find(query).sort({ createdAt: -1 });
       res.json({
         success: true,
-        count: results.length,
-        data: results
+        count: prescriptions.length,
+        data: prescriptions
       });
     } catch (err) {
       res.status(500).json({ 
@@ -250,18 +179,18 @@ const labtechController = {
     }
   },
 
-  deleteLabTestResult: async (req, res) => {
+  getLabTestPrescriptionById: async (req, res) => {
     try {
-      const result = await LabTestResult.findByIdAndDelete(req.params.resultId);
-      if (!result) {
+      const prescription = await LabPres.findOne({ LabPrescription_Id: req.params.prescriptionId });
+      if (!prescription) {
         return res.status(404).json({ 
           success: false,
-          error: 'Lab test result not found' 
+          error: 'Lab test prescription not found' 
         });
       }
       res.json({
         success: true,
-        message: 'Lab test result deleted successfully'
+        data: prescription
       });
     } catch (err) {
       res.status(500).json({ 
@@ -271,16 +200,18 @@ const labtechController = {
     }
   },
 
-  getResultsByAppointment: async (req, res) => {
+  getLabTestPrescriptionByAppointmentId: async (req, res) => {
     try {
-      const results = await LabTestResult.find({ 
-        app_id: req.params.appointmentId 
-      }).sort({ date_tested: -1 });
-      
+      const prescription = await LabPres.findOne({ Appointment_Id: req.params.appointmentId });
+      if (!prescription) {
+        return res.status(404).json({ 
+          success: false,
+          error: 'Lab test prescription not found for this appointment' 
+        });
+      }
       res.json({
         success: true,
-        count: results.length,
-        data: results
+        data: prescription
       });
     } catch (err) {
       res.status(500).json({ 
@@ -290,16 +221,18 @@ const labtechController = {
     }
   },
 
-  getResultsByDoctor: async (req, res) => {
+  listLabTestPrescriptionsByPatient: async (req, res) => {
     try {
-      const results = await LabTestResult.find({ 
-        doc_id: req.params.doctorId 
-      }).sort({ date_tested: -1 });
-      
+      const { Appointment } = require('../models/receptionist');
+      const appointments = await Appointment.find({ patient_id: req.params.patientId });
+      const appointmentIds = appointments.map(app => app.App_Id);
+      const prescriptions = await LabPres.find({
+        Appointment_Id: { $in: appointmentIds }
+      }).sort({ createdAt: -1 });
       res.json({
         success: true,
-        count: results.length,
-        data: results
+        count: prescriptions.length,
+        data: prescriptions
       });
     } catch (err) {
       res.status(500).json({ 
@@ -309,105 +242,23 @@ const labtechController = {
     }
   },
 
-  updateResultStatus: async (req, res) => {
+  updateLabTestPrescription: async (req, res) => {
     try {
-      const { status } = req.body;
-      const updated = await LabTestResult.findByIdAndUpdate(
-        req.params.resultId,
-        { status, updatedAt: new Date() },
+      const updated = await LabPres.findOneAndUpdate(
+        { LabPrescription_Id: req.params.prescriptionId },
+        { ...req.body, updatedAt: new Date() },
         { new: true }
       );
       if (!updated) {
         return res.status(404).json({ 
           success: false,
-          error: 'Lab test result not found' 
+          error: 'Lab test prescription not found' 
         });
       }
       res.json({
         success: true,
-        message: 'Lab test result status updated successfully',
+        message: 'Lab test prescription updated successfully',
         data: updated
-      });
-    } catch (err) {
-      res.status(500).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  // LAB TEST PRESCRIPTION MANAGEMENT
-  recordLabTestResult: async (req, res) => {
-    try {
-      const labTestResult = await LabTestResult.findOneAndUpdate(
-        { labRes_id: req.params.labTestPrescriptionId },
-        req.body,
-        { new: true }
-      );
-      if (!labTestResult) {
-        return res.status(404).json({ 
-          success: false,
-          error: 'Lab test result not found' 
-        });
-      }
-      res.json({
-        success: true,
-        message: 'Lab test result recorded successfully',
-        data: labTestResult
-      });
-    } catch (err) {
-      res.status(400).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  getLabTestResultByAppointmentId: async (req, res) => {
-    try {
-      const labTestResult = await LabTestResult.findOne({ app_id: req.params.appointmentId });
-      if (!labTestResult) {
-        return res.status(404).json({ 
-          success: false,
-          error: 'Lab test result not found' 
-        });
-      }
-      res.json({
-        success: true,
-        data: labTestResult
-      });
-    } catch (err) {
-      res.status(400).json({ 
-        success: false,
-        error: err.message 
-      });
-    }
-  },
-
-  listLabTestResultsByDateRange: async (req, res) => {
-    try {
-      const { startDate, endDate } = req.query;
-      if (!startDate || !endDate) {
-        return res.status(400).json({ 
-          success: false,
-          error: 'Start date and end date parameters are required' 
-        });
-      }
-      
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      end.setDate(end.getDate() + 1);
-      
-      const labTestResults = await LabTestResult.find({
-        date_tested: {
-          $gte: start,
-          $lt: end
-        }
-      });
-      res.json({
-        success: true,
-        count: labTestResults.length,
-        data: labTestResults
       });
     } catch (err) {
       res.status(400).json({ 
@@ -419,12 +270,12 @@ const labtechController = {
 
   deactivateLabTestPrescription: async (req, res) => {
     try {
-      const labTestResult = await LabTestResult.findOneAndUpdate(
-        { labRes_id: req.params.labTestPrescriptionId },
-        { status: 'cancelled' },
+      const updated = await LabPres.findOneAndUpdate(
+        { LabPrescription_Id: req.params.prescriptionId },
+        { status: 'cancelled', updatedAt: new Date() },
         { new: true }
       );
-      if (!labTestResult) {
+      if (!updated) {
         return res.status(404).json({ 
           success: false,
           error: 'Lab test prescription not found' 
@@ -433,7 +284,7 @@ const labtechController = {
       res.json({
         success: true,
         message: 'Lab test prescription deactivated successfully',
-        data: labTestResult
+        data: updated
       });
     } catch (err) {
       res.status(400).json({ 
@@ -442,7 +293,6 @@ const labtechController = {
       });
     }
   },
-
 
 };
 

@@ -82,8 +82,8 @@ const validateAppointmentSchedule = [
         .matches(/^PAT\d+$/)
         .withMessage('Invalid patient ID format. Must be PAT followed by numbers (e.g., PAT123)'),
     body('doctor_id')
-        .isInt({ min: 1 })
-        .withMessage('Invalid doctor ID'),
+        .matches(/^DOC\d+$/)
+        .withMessage('Invalid doctor ID format. Must be DOC followed by numbers (e.g., DOC123)'),
     body('scheduled_date')
         .isISO8601()
         .withMessage('Scheduled date must be a valid date'),
@@ -109,8 +109,8 @@ const validateAppointmentUpdate = [
         .withMessage('Invalid patient ID format. Must be PAT followed by numbers (e.g., PAT123)'),
     body('doctor_id')
         .optional()
-        .isInt({ min: 1 })
-        .withMessage('Invalid doctor ID'),
+        .matches(/^DOC\d+$/)
+        .withMessage('Invalid doctor ID format. Must be DOC followed by numbers (e.g., DOC123)'),
     body('scheduled_date')
         .optional()
         .isISO8601()

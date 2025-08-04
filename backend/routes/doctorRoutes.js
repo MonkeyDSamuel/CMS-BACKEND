@@ -15,12 +15,14 @@ router.post('/api/prescriptions/medicine', verifyToken, checkRole(['Doctor', 'Ad
 router.put('/api/prescriptions/medicine/:prescriptionId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.updateMedicinePrescription);
 router.get('/api/prescriptions/medicine/appointment/:appointmentId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.getMedicinePrescriptionByAppointmentId);
 router.get('/api/prescriptions/medicine/patient/:patientId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorPatientAccess, doctorController.listMedicinePrescriptionsByPatient);
+router.delete('/api/prescriptions/medicine/:prescriptionId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.deleteMedicinePrescription);
 
 // LAB TEST PRESCRIPTION
 router.post('/api/prescriptions/labtest', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.createLabTestPrescription);
 router.put('/api/prescriptions/labtest/:prescriptionId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.updateLabTestPrescription);
 router.get('/api/prescriptions/labtest/appointment/:appointmentId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.getLabTestPrescriptionByAppointmentId);
 router.get('/api/prescriptions/labtest/patient/:patientId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorPatientAccess, doctorController.listLabTestPrescriptionsByPatient);
+router.delete('/api/prescriptions/labtest/:prescriptionId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorAppointmentAccess, doctorController.deleteLabTestPrescription);
 
 // CONSULTATION HISTORY
 router.get('/api/consultations/patient/:patientId', verifyToken, checkRole(['Doctor', 'Administrator']), checkDoctorPatientAccess, doctorController.listConsultationsByPatient);

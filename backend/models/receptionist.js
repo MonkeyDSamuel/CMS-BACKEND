@@ -78,6 +78,37 @@ AppointmentSchema.pre('save', async function(next) {
     next();
 });
 
+// Pre-save middleware to validate doctor exists
+AppointmentSchema.pre('save', async function(next) {
+    try {
+        // Import Doctor model
+        const { Doctor } = require('./admin');
+        
+        // Check if doctor exists
+        const doctor = await Doctor.findOne({ Doctor_Id: this.doctor_id, isActive: true });
+        if (!doctor) {
+            return next(new Error(`Doctor with ID '${this.doctor_id}' does not exist or is inactive`));
+        }
+        next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
+// Pre-save middleware to validate patient exists
+AppointmentSchema.pre('save', async function(next) {
+    try {
+        // Check if patient exists using the Patient model
+        const patient = await Patient.findOne({ Pat_Id: this.patient_id });
+        if (!patient) {
+            return next(new Error(`Patient with ID '${this.patient_id}' does not exist`));
+        }
+        next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
 const BillingSchema = new mongoose.Schema({
     Bill_Id: { type: String, unique: true },
     appointment_id: { type: String, required: true },
@@ -91,6 +122,20 @@ BillingSchema.pre('save', async function(next) {
         this.Bill_Id = await generateBillId();
     }
     next();
+});
+
+// Pre-save middleware to validate appointment exists
+BillingSchema.pre('save', async function(next) {
+    try {
+        // Check if appointment exists using the Appointment model
+        const appointment = await Appointment.findOne({ App_Id: this.appointment_id });
+        if (!appointment) {
+            return next(new Error(`Appointment with ID '${this.appointment_id}' does not exist`));
+        }
+        next();
+    } catch (error) {
+        return next(error);
+    }
 });
 
 // Create models

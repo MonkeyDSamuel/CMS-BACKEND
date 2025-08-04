@@ -162,6 +162,22 @@ StaffSchema.pre('save', async function(next) {
     }
 });
 
+// Pre-save middleware to validate specialization exists for Doctor
+DoctorSchema.pre('save', async function(next) {
+    try {
+        // Import Specialization model
+        const Specialization = mongoose.model('Specialization');
+        // Check if specialization exists and is active
+        const specialization = await Specialization.findOne({ Specialization_Id: this.specialization, isActive: true });
+        if (!specialization) {
+            return next(new Error(`Specialization with ID '${this.specialization}' does not exist or is inactive`));
+        }
+        next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
 const Staff = mongoose.model('Staff', StaffSchema);
 const Specialization = mongoose.model('Specialization', SpecializationSchema);
 const SpecializationCounter = mongoose.model('SpecializationCounter', SpecializationCounterSchema);
